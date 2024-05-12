@@ -7,4 +7,14 @@ fn main() {
     }
 
     println!("gh cli is installed");
+
+    let pr_string = gh::get_pr_string().unwrap();
+
+    let pr_list = proot::parse::parse_pr_list(&pr_string).unwrap();
+
+    for pr in &pr_list {
+        println!("{:?}", pr);
+    }
+
+    println!("Total PRs: {}", pr_list.len());
 }

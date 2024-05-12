@@ -1,12 +1,13 @@
 use serde::Deserialize;
 
 /// Parses the input of gh pr list json output
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Pr {
-    //title is optional
     title: Option<String>,
     state: String,
+    #[serde(rename = "baseRefName")]
     base_ref_name: String,
+    #[serde(rename = "headRefName")]
     head_ref_name: String,
 }
 
@@ -25,14 +26,14 @@ mod tests {
                     {
                         "title": "Add feature",
                         "state": "OPEN",
-                        "base_ref_name": "main",
-                        "head_ref_name": "feature"
+                        "baseRefName": "main",
+                        "headRefName": "feature"
                     },
                     {
                         "title": "Fix bug",
                         "state": "CLOSED",
-                        "base_ref_name": "main",
-                        "head_ref_name": "bugfix"
+                        "baseRefName": "main",
+                        "headRefName": "bugfix"
                     }
             ]
         "#;
@@ -56,7 +57,7 @@ mod tests {
                     {
                         "title": "Add feature",
                         "state": "OPEN",
-                        "base_ref_name": "main"
+                        "baseRefName": "main"
                     }
                 ]
             "#,
@@ -65,7 +66,7 @@ mod tests {
                     {
                         "title": "Add feature",
                         "state": "OPEN",
-                        "head_ref_name": "feature"
+                        "headRefName": "feature"
                     }
                 ]
             "#,
@@ -73,8 +74,8 @@ mod tests {
                 [
                     {
                         "title": "Add feature",
-                        "base_ref_name": "main",
-                        "head_ref_name": "feature"
+                        "baseRefName": "main",
+                        "headRefName": "feature"
                     }
                 ]
             "#,
@@ -92,8 +93,8 @@ mod tests {
             [
                 {
                     "state": "OPEN",
-                    "base_ref_name": "main",
-                    "head_ref_name": "feature"
+                    "baseRefName": "main",
+                    "headRefName": "feature"
                 }
             ]
         "#;
