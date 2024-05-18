@@ -113,7 +113,7 @@ impl PrGraph {
                 starting_node.blue().bold()
             ));
             self.dfs_print(&starting_node, &mut visited, "", &mut result);
-            result.push_str("\n");
+            result.push('\n');
         }
         result
     }

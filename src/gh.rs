@@ -12,7 +12,32 @@ pub fn get_pr_string() -> Result<String> {
         .arg("id,number,title,url,state,isCrossRepository,baseRefName,headRefName,headRepositoryOwner")
         .output()?;
 
+    if !output.status.success() {
+        error!("Failed to get PR list from GitHub");
+        anyhow::bail!("Failed to get PR list from GitHub");
+    }
+
     String::from_utf8(output.stdout).with_context(|| "Could not convert gh cli output to string")
+}
+
+pub fn open_pr_on_web(pr_number: u64) -> Result<()> {
+    info!("Opening PR on GitHub");
+    let output = Command::new("gh")
+        .arg("pr")
+        .arg("view")
+        .arg(pr_number.to_string())
+        .arg("--web")
+        .output()?;
+
+    if !output.status.success() {
+        check_health()?;
+        anyhow::bail!(
+            "Failed to open PR on GitHub: {}. It may not exist.",
+            pr_number
+        );
+    }
+
+    Ok(())
 }
 
 pub fn check_health() -> Result<()> {
@@ -20,7 +45,6 @@ pub fn check_health() -> Result<()> {
     let output = Command::new("gh").arg("--version").output()?;
 
     if !output.status.success() {
-        error!("gh cli is not installed");
         anyhow::bail!("gh cli is not installed");
     }
 
