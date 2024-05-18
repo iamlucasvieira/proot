@@ -1,9 +1,9 @@
 # 🌳 PRoot
+
 [![Unit Tests](https://github.com/iamlucasvieira/proot/actions/workflows/rust.yml/badge.svg)](https://github.com/iamlucasvieira/proot/actions/workflows/rust.yml)
 [![GitHub License](https://img.shields.io/github/license/iamlucasvieira/proot)](LICENSE)
 [![Crates.io Version](https://img.shields.io/crates/v/proot)](https://crates.io/crates/proot)
 [![Crates.io Total Downloads](https://img.shields.io/crates/d/proot)](https://crates.io/crates/proot)
-
 
 PRoot is a GitHub PR Graph Visualizer that helps you seeing the relationships and dependencies among pull requests within a GitHub repository.
 
@@ -35,6 +35,12 @@ To visualize the PR dependencies, run:
 
 ```bash
 proot
+```
+
+Open a PR in the browser from the CLI:
+
+```bash
+proot <pr_number>
 ```
 
 To check if GitHub CLI is installed, run:
