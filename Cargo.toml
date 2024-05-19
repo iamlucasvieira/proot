@@ -1,6 +1,6 @@
 [package]
 name = "proot"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Lucas Vieira <lucas6eng@gmail.com>"]
 edition = "2021"
 description = "Wrapper around gh CLI"
