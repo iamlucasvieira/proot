@@ -10,6 +10,8 @@ PRoot is a GitHub PR Graph Visualizer that helps you seeing the relationships an
 ## Features
 
 - **Visualize PR Dependencies:** Generate a graphical representation of pull request dependencies within a repository.
+- **Open PR in Browser:** Open a specific pull request in the browser directly from the CLI.
+- **Filter PRs to Open:** Filter PRs to open based on their dependencies.
 - **Check GitHub CLI Installation:** Quickly verify if GitHub CLI is installed on your system.
 
 ## Installation
@@ -41,6 +43,18 @@ Open a PR in the browser from the CLI:
 
 ```bash
 proot <pr_number>
+```
+
+Filter PRs to open based on their dependencies:
+
+```bash
+proot filter --me
+```
+
+You can also use custom filters:
+
+```bash
+proot filter -c "is:closed"
 ```
 
 To check if GitHub CLI is installed, run:
