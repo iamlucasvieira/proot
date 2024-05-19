@@ -17,6 +17,10 @@ struct Cli {
 
     #[command(subcommand)]
     command: Option<Commands>,
+
+    /// Limit the number of PRs to show. Optional.
+    #[arg(short, long, default_value_t = 50)]
+    limit: usize,
 }
 
 #[derive(Parser, Debug)]
@@ -41,7 +45,7 @@ fn main() {
     env_logger::init();
 
     let cli = Cli::parse();
-    let gh_cli = gh::GhCli::new();
+    let gh_cli = gh::GhCli::new(cli.limit);
 
     if let Some(pr_number) = cli.number {
         let response = gh_cli.open_pr_on_web(pr_number);

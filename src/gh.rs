@@ -9,14 +9,16 @@ pub struct GhCli {
 }
 
 impl GhCli {
-    pub fn new() -> Self {
+    pub fn new(limit: usize) -> Self {
         Self { 
             base_command: "gh".to_string(),
             list_args: vec![
                 "pr".to_string(),
                 "list".to_string(),
                 "--json".to_string(),
-                "id,number,title,url,state,isCrossRepository,baseRefName,headRefName,headRepositoryOwner".to_string()
+                "id,number,title,url,state,isCrossRepository,baseRefName,headRefName,headRepositoryOwner".to_string(),
+                "--limit".to_string(),
+                limit.to_string()
             ]
         }
     }
