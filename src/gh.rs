@@ -1,52 +1,78 @@
 use anyhow::{Context, Result};
-use log::{error, info};
+use log::info;
 
 use std::process::Command;
-// Run command: gh pr list --json "id,title,state,baseRefName,headRefName"
-pub fn get_pr_string() -> Result<String> {
-    info!("Getting PR list from GitHub");
-    let output = Command::new("gh")
-        .arg("pr")
-        .arg("list")
-        .arg("--json")
-        .arg("id,number,title,url,state,isCrossRepository,baseRefName,headRefName,headRepositoryOwner")
-        .output()?;
 
-    if !output.status.success() {
-        error!("Failed to get PR list from GitHub");
-        anyhow::bail!("Failed to get PR list from GitHub");
-    }
-
-    String::from_utf8(output.stdout).with_context(|| "Could not convert gh cli output to string")
+pub struct GhCli {
+    base_command: String,
+    list_args: Vec<String>
 }
 
-pub fn open_pr_on_web(pr_number: u64) -> Result<()> {
-    info!("Opening PR on GitHub");
-    let output = Command::new("gh")
-        .arg("pr")
-        .arg("view")
-        .arg(pr_number.to_string())
-        .arg("--web")
-        .output()?;
-
-    if !output.status.success() {
-        check_health()?;
-        anyhow::bail!(
-            "Failed to open PR on GitHub: {}. It may not exist.",
-            pr_number
-        );
+impl GhCli {
+    pub fn new() -> Self {
+        Self { 
+            base_command: "gh".to_string(),
+            list_args: vec![
+                "pr".to_string(),
+                "list".to_string(),
+                "--json".to_string(),
+                "id,number,title,url,state,isCrossRepository,baseRefName,headRefName,headRepositoryOwner".to_string()
+            ]
+        }
     }
 
-    Ok(())
-}
-
-pub fn check_health() -> Result<()> {
-    info!("Checking if gh cli is installed");
-    let output = Command::new("gh").arg("--version").output()?;
-
-    if !output.status.success() {
-        anyhow::bail!("gh cli is not installed");
+    fn command(&self) -> Command {
+        let cmd = Command::new(&self.base_command);
+        cmd
     }
 
-    Ok(())
+
+    fn run_command(&self, mut cmd: Command) -> Result<String> {
+        let output = cmd.output().with_context(|| format!("Failed to run gh command"))?;
+
+        if !output.status.success() {
+            anyhow::bail!("{}", String::from_utf8_lossy(&output.stderr));
+        }
+
+        String::from_utf8(output.stdout)
+            .with_context(|| "Could not convert gh cli output to string")
+    }
+
+    pub fn check_health(&self) -> Result<String> {
+        info!("Checking if gh cli is installed");
+        let mut cmd = self.command();
+        cmd.arg("--version");
+        info!("Running command: {:?}", cmd);
+        self.run_command(cmd)
+    }
+
+    pub fn open_pr_on_web(&self, pr_number: u64) -> Result<String> {
+        info!("Opening PR on GitHub");
+        let mut cmd = self.command();
+        cmd.arg("pr")
+            .arg("view")
+            .arg(pr_number.to_string())
+            .arg("--web");
+        info!("Running command: {:?}", cmd);
+        self.run_command(cmd)
+    }
+
+    pub fn get_all_prs(&self) -> Result<String> {
+        info!("Getting PR list from GitHub");
+        let mut cmd = self.command();
+        cmd.args(&self.list_args);
+        info!("Running command: {:?}", cmd);
+        self.run_command(cmd)
+    }
+
+    pub fn get_filtered_prs(&self, filter: String) -> Result<String> {
+        info!("Getting PR list from GitHub for user");
+        let mut cmd = self.command();
+        cmd.args(&self.list_args)
+            .arg("--search".to_string())
+            .arg(filter);
+        info!("Running command: {:?}", cmd);
+        self.run_command(cmd)
+    }
+
 }

@@ -134,11 +134,14 @@ impl PrGraph {
         if let Some(head_ref_names) = self.adjacency_list.get(node) {
             let count = head_ref_names.len();
             for (index, head_ref_name) in head_ref_names.iter().enumerate() {
+                let is_last = index == count - 1;
                 let connector = if index < count - 1 {
                     "├──○"
                 } else {
                     "└──○"
                 };
+                let parent_connector = if is_last { " " } else { "│" };
+
                 match self.get_pr(head_ref_name, node) {
                     Some(pr) => {
                         let title = pr.title.clone().unwrap_or("".to_string());
@@ -156,7 +159,12 @@ impl PrGraph {
                         result.push_str(&format!("{}  {}\n", ident, head_ref_name));
                     }
                 }
-                self.dfs_print(head_ref_name, visited, &format!("{}   ", ident), result);
+                self.dfs_print(
+                    head_ref_name,
+                    visited,
+                    &format!("{}{}  ", ident, parent_connector.blue().bold()),
+                    result,
+                );
             }
         }
     }
